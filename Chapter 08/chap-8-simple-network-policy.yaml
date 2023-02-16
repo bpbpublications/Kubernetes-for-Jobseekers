@@ -1,0 +1,22 @@
+# you need CNI plugin for your cluster installed to make this work.
+# by default, all major public cloud providers have CNI plugin configured.
+# the following should work there.
+# kubectl apply -f chap-8-simple-network-policy.yaml
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-http-https-from-prod-frontends-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+      env: production
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+              env: production
+      ports:
+        - port: 443
+        - port: 80

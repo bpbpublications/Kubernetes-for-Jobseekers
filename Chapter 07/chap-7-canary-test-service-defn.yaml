@@ -1,0 +1,47 @@
+# kubectl create -f chap-6-service-defn.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: NodePort
+
+# $ kc apply -f chap-6-service-defn.yaml
+# service/frontend created
+
+# gshiv@DESKTOP-UBPJAV8 MINGW64 ~/OneDrive/code/k8s-for-job-seekers (main)
+# $ kc get svc/frontend
+# NAME       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+# frontend   NodePort   10.102.187.11   <none>        8080:30245/TCP   8s
+
+# gshiv@DESKTOP-UBPJAV8 MINGW64 ~/OneDrive/code/k8s-for-job-seekers (main)$ curl localhost:30245
+# <!DOCTYPE html>
+# <html>
+# <head>
+# <title>Welcome to nginx!</title>
+# <style>
+#     body {
+#         width: 35em;
+#         margin: 0 auto;
+#         font-family: Tahoma, Verdana, Arial, sans-serif;
+#     }
+# </style>
+# </head>
+# <body>
+# <h1>Welcome to nginx!</h1>
+# <p>If you see this page, the nginx web server is successfully installed and
+# working. Further configuration is required.</p>
+
+# <p>For online documentation and support please refer to
+# <a href="http://nginx.org/">nginx.org</a>.<br/>
+# Commercial support is available at
+# <a href="http://nginx.com/">nginx.com</a>.</p>
+
+# <p><em>Thank you for using nginx.</em></p>
+# </body>
+# </html>

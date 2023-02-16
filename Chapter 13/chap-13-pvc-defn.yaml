@@ -1,0 +1,27 @@
+# kubectl apply -f chap-13-pvc-defn.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: wp-pv
+spec:
+  capacity:
+    storage: 2Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: manual
+  hostPath:
+    path: "/tmp/wp-pvc-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: wp-local-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: manual

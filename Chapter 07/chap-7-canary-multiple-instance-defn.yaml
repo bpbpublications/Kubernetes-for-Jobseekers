@@ -1,0 +1,28 @@
+# kubectl apply -f chap-7-canary-single-instance-defn.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-canary-single-instance
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      version: canary-single-instance
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: canary-single-instance
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.20.2
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+
+# kubectl set image deployment/nginx-deployment nginx=nginx:1.20.2

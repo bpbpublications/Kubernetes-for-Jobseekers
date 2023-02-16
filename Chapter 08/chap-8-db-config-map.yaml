@@ -1,0 +1,14 @@
+# kubectl apply -f chap-8-db-config-map.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  labels:
+    app: db
+    env: dev
+data:
+  db_connection_string: "postgresql+psycopg2://app_user:{password}@dbhost/mydb"
+  db_user: "app_user"
+  db_host: "dbhost"
+  DB_NAME: "mydb"
+

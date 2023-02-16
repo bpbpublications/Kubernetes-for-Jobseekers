@@ -1,0 +1,15 @@
+# kubectl apply -f chap-6-pod-defn.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: nginx
+  name: my-nginx-pod
+  namespace: default
+spec:
+  containers:
+  - image: nginx:1.14.2
+    imagePullPolicy: IfNotPresent
+    name: nginx
+    ports:
+    - containerPort: 80

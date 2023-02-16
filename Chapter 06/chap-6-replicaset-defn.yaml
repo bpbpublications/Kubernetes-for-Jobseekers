@@ -1,0 +1,20 @@
+#kubectl apply -f chap-6-replicaset-defn.yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+spec:
+  # number of replicas you want
+  replicas: 3
+  selector:
+    matchLabels:
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        tier: frontend
+    spec:
+      containers:
+      - name: my-nginx-with-replicas
+        image: nginx:1.14.2
+

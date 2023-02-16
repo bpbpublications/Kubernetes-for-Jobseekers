@@ -1,0 +1,41 @@
+# kc apply -f chap-6-daemonset-defn.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-daemonset
+spec:
+  selector:
+    matchLabels:
+      app: lb
+  template:
+    metadata:
+      labels:
+        app: lb
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.20.2
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 8000
+
+# $ kc get nodes
+# NAME             STATUS   ROLES                  AGE   VERSION
+# docker-desktop   Ready    control-plane,master   20h   v1.22.5
+
+# gshiv@DESKTOP-UBPJAV8 MINGW64 ~/OneDrive/code/k8s-for-job-seekers (main)
+# $ kc apply -f chap-6-daemonset-defn.yaml
+# daemonset.apps/nginx-daemonset created
+
+# gshiv@DESKTOP-UBPJAV8 MINGW64 ~/OneDrive/code/k8s-for-job-seekers (main)
+# $ kc get daemonsets
+# NAME              DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+# nginx-daemonset   1         1         1       1            1           <none>          6s
+
+# gshiv@DESKTOP-UBPJAV8 MINGW64 ~/OneDrive/code/k8s-for-job-seekers (main)
+# $ kc get pods
+# NAME                                READY   STATUS    RESTARTS   AGE
+# nginx-daemonset-brfgt               1/1     Running   0          11s

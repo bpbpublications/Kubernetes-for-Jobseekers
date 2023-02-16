@@ -1,0 +1,89 @@
+# kubectl apply -f chap-6-pvc-defn.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: manual
+  hostPath:
+    path: "/tmp/pvc-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: example-local-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pvc-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pvc-deployment
+  template:
+    metadata:
+      labels:
+        app: pvc-deployment
+    spec:
+      containers:
+        - name: pvc-deployment
+          image: nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: example-local-claim
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+      initContainers:
+        - name: pvc-deployment-init
+          image: busybox
+          command:
+            - sh
+            - -c
+            - echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>k8s for job seekers</title></head><body>You got this!</body></html>' > /usr/share/nginx/html/index.html
+          volumeMounts:
+            - name: example-local-claim
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: example-local-claim
+          persistentVolumeClaim:
+            claimName: example-local-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pvc-deployment
+spec:
+  selector:
+    app: pvc-deployment
+  ports:
+    - port: 8080
+      targetPort: 80
+  type: NodePort
+# gshiva@DESKTOP-UBPJAV8:/mnt/c/Users/gshiv/OneDrive/code/k8s-for-job-seekers$ kc apply -f chap-6-pvc-defn.yaml
+# persistentvolume/example-pv created
+# persistentvolumeclaim/example-local-claim created
+# deployment.apps/pvc-deployment created
+# service/pvc-deployment created
+# gshiva@DESKTOP-UBPJAV8:/mnt/c/Users/gshiv/OneDrive/code/k8s-for-job-seekers$ kc get svc
+# NAME             TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+# frontend         NodePort    10.110.95.223    <none>        8080:32575/TCP   9h
+# kubernetes       ClusterIP   10.96.0.1        <none>        443/TCP          5d19h
+# pvc-deployment   NodePort    10.100.239.172   <none>        8080:30160/TCP   4s
+# gshiva@DESKTOP-UBPJAV8:/mnt/c/Users/gshiv/OneDrive/code/k8s-for-job-seekers$ curl localhost:30160
+# <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>k8s for job seekers</title></head><body>You got this!</body></html>

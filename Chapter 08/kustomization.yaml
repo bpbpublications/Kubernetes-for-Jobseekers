@@ -1,0 +1,4 @@
+resources:
+- chap-8-gitops-deploy.yaml
+patchesStrategicMerge:
+- set_replicas.yaml

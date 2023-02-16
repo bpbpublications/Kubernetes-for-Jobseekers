@@ -1,0 +1,30 @@
+# kubectl apply -f chap-6-deployment-liveness-probe.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ever-not-ready
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-ready-not
+  template:
+    metadata:
+      labels:
+        app: frontend-ready-not
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.20.2
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/nonexistent-file
+

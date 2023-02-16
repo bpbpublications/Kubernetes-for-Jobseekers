@@ -1,0 +1,67 @@
+# kubectl apply -f chap-7-fail-canary-deployment.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: example-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: manual
+  hostPath:
+    path: "/tmp/pvc-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: example-local-claim
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: manual
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fail-canary-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      version: fail-canary-deployment
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: fail-canary-deployment
+    spec:
+      containers:
+        - name: fail-canary-deployment
+          image: nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: example-local-claim
+              mountPath: /usr/share/nginx/html
+              readOnly: true
+      initContainers:
+        - name: fail-canary-deployment-init
+          image: busybox
+          command:
+            - sh
+            - -c
+            - touch /usr/share/nginx/html/index.html && rm /usr/share/nginx/html/index.html
+          volumeMounts:
+            - name: example-local-claim
+              mountPath: /usr/share/nginx/html
+      volumes:
+        - name: example-local-claim
+          persistentVolumeClaim:
+            claimName: example-local-claim

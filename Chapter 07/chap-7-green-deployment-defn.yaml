@@ -1,0 +1,28 @@
+# kubectl apply -f chap-6-deployment-update-defn.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-green-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
+      version: green
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: green
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.20.2
+        resources:
+          limits:
+            memory: "100Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+
+# kubectl set image deployment/nginx-deployment nginx=nginx:1.20.2

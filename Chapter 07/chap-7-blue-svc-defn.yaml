@@ -1,0 +1,13 @@
+# kubectl apply -f chap-7-blue-svc-defn.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  selector:
+    app: frontend
+    version: blue
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: NodePort
